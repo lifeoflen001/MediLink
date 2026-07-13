@@ -1,0 +1,1 @@
+- [MediConnect Architecture](mediconnect.md) — Expo mobile app + Express API server; key decisions on AI chat, colors, data shape

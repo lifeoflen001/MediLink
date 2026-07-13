@@ -13,16 +13,35 @@ import {
 } from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { setBaseUrl } from '@workspace/api-client-react';
+import { AppProvider } from '@/context/AppContext';
+import { ChatProvider } from '@/context/ChatContext';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Set absolute base URL so Expo can reach the API outside the shared proxy
+if (process.env.EXPO_PUBLIC_DOMAIN) {
+  setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
+}
+
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   return (
-    <Stack screenOptions={{ headerBackTitle: 'Back' }}>
+    <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="medicine/[id]"
+        options={{ title: 'Medicine Details', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="pharmacy/[id]"
+        options={{ title: 'Pharmacy', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="emergency"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }
@@ -49,7 +68,11 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <GestureHandlerRootView>
             <KeyboardProvider>
-              <RootLayoutNav />
+              <AppProvider>
+                <ChatProvider>
+                  <RootLayoutNav />
+                </ChatProvider>
+              </AppProvider>
             </KeyboardProvider>
           </GestureHandlerRootView>
         </QueryClientProvider>
