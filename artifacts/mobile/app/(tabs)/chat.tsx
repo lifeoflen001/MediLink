@@ -19,30 +19,51 @@ import { QUICK_SUGGESTIONS } from '@/data/mockData';
 
 function MessageBubble({ message, colors }: { message: ChatMessage; colors: ReturnType<typeof useColors> }) {
   const isUser = message.role === 'user';
+  const isError = message.isError;
+
+  const bubbleBg = isUser
+    ? colors.primary
+    : isError
+    ? colors.errorBg
+    : colors.card;
+
+  const bubbleBorder = isUser
+    ? colors.primary
+    : isError
+    ? colors.errorText
+    : colors.border;
+
+  const textColor = isUser
+    ? colors.primaryForeground
+    : isError
+    ? colors.errorText
+    : colors.foreground;
+
   return (
     <View style={[styles.bubbleWrapper, isUser ? styles.bubbleRight : styles.bubbleLeft]}>
       {!isUser && (
-        <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          <Ionicons name="medical" size={13} color="#fff" />
+        <View style={[styles.avatar, { backgroundColor: isError ? colors.errorText : colors.primary }]}>
+          <Ionicons name={isError ? 'warning' : 'medical'} size={13} color="#fff" />
         </View>
       )}
       <View
         style={[
           styles.bubble,
           {
-            backgroundColor: isUser ? colors.primary : colors.card,
-            borderColor: isUser ? colors.primary : colors.border,
+            backgroundColor: bubbleBg,
+            borderColor: bubbleBorder,
             borderBottomRightRadius: isUser ? 4 : 18,
             borderBottomLeftRadius: isUser ? 18 : 4,
           },
         ]}
       >
-        <Text
-          style={[
-            styles.bubbleText,
-            { color: isUser ? colors.primaryForeground : colors.foreground },
-          ]}
-        >
+        {isError && (
+          <View style={styles.errorBadge}>
+            <Ionicons name="alert-circle-outline" size={12} color={colors.errorText} />
+            <Text style={[styles.errorBadgeText, { color: colors.errorText }]}>Error</Text>
+          </View>
+        )}
+        <Text style={[styles.bubbleText, { color: textColor }]}>
           {message.content}
         </Text>
         <Text
@@ -250,4 +271,7 @@ const styles = StyleSheet.create({
   inputWrapper: { flex: 1, borderRadius: 22, paddingHorizontal: 16, paddingVertical: 10, borderWidth: 1, maxHeight: 100 },
   input: { fontSize: 15, padding: 0, maxHeight: 80 },
   sendBtn: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+
+  errorBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 },
+  errorBadgeText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
 });

@@ -65,9 +65,23 @@ router.post("/chat", async (req, res) => {
 
     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
     res.end();
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error({ error }, "AI chat error");
-    res.write(`data: ${JSON.stringify({ error: "Failed to get AI response. Please try again." })}\n\n`);
+    // Forward the OpenAI error code so the client can show a tailored message
+    let errorMessage = "Failed to get AI response. Please try again.";
+    if (
+      error &&
+      typeof error === "object" &&
+      "error" in error &&
+      error.error &&
+      typeof error.error === "object" &&
+      "message" in error.error
+    ) {
+      errorMessage = String((error.error as { message: string }).message);
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    res.write(`data: ${JSON.stringify({ error: errorMessage })}\n\n`);
     res.end();
   }
 });

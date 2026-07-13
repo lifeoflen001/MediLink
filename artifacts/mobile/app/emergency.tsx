@@ -17,12 +17,25 @@ const EMERGENCY_NUMBERS = [
   { label: 'Police', number: '999', icon: 'shield-checkmark' as const },
 ];
 
+// Emergency red — intentionally stays vivid regardless of dark mode
+const ER = {
+  primary: '#DC2626',
+  bg: '#FEE2E2',
+  darkBg: '#2D0A0A',
+  text: '#991B1B',
+  darkText: '#FCA5A5',
+};
+
 export default function EmergencyScreen() {
   const colors = useColors();
+  const isDark = colors.background === '#0A0F0D'; // quick check for dark palette
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
   const { userProfile } = useApp();
+
+  const erText = isDark ? ER.darkText : ER.text;
+  const erBg = isDark ? ER.darkBg : ER.bg;
 
   const nearestEmergencyPharmacy = PHARMACIES.find(p => p.hasEmergency && p.isOpen);
 
@@ -51,9 +64,9 @@ export default function EmergencyScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: '#FFF1F0' }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + 8, backgroundColor: '#DC2626' }]}>
+      <View style={[styles.header, { paddingTop: topPad + 8, backgroundColor: ER.primary }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color="#fff" />
         </TouchableOpacity>
@@ -67,32 +80,32 @@ export default function EmergencyScreen() {
       >
         {/* SOS Banner */}
         <View style={styles.sosBanner}>
-          <View style={[styles.sosIcon, { backgroundColor: '#DC2626' }]}>
+          <View style={[styles.sosIcon, { backgroundColor: ER.primary }]}>
             <Ionicons name="alert-circle" size={40} color="#fff" />
           </View>
-          <Text style={styles.sosTitle}>Emergency Mode</Text>
-          <Text style={styles.sosSubtitle}>
+          <Text style={[styles.sosTitle, { color: ER.primary }]}>Emergency Mode</Text>
+          <Text style={[styles.sosSubtitle, { color: colors.mutedForeground }]}>
             Call emergency services or find the nearest healthcare facility
           </Text>
         </View>
 
         {/* Emergency Numbers */}
-        <View style={[styles.card, { backgroundColor: '#fff', borderColor: '#FCA5A5' }]}>
-          <Text style={[styles.cardTitle, { color: '#991B1B' }]}>Emergency Numbers</Text>
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.cardTitle, { color: ER.primary }]}>Emergency Numbers</Text>
           {EMERGENCY_NUMBERS.map(item => (
             <TouchableOpacity
               key={item.number + item.label}
               style={styles.emergencyRow}
               onPress={() => handleCall(item.number, item.label)}
             >
-              <View style={[styles.emergencyIcon, { backgroundColor: '#FEE2E2' }]}>
-                <Ionicons name={item.icon} size={20} color="#DC2626" />
+              <View style={[styles.emergencyIcon, { backgroundColor: erBg }]}>
+                <Ionicons name={item.icon} size={20} color={ER.primary} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.emergencyLabel}>{item.label}</Text>
-                <Text style={styles.emergencyNumber}>{item.number}</Text>
+                <Text style={[styles.emergencyLabel, { color: colors.foreground }]}>{item.label}</Text>
+                <Text style={[styles.emergencyNumber, { color: ER.primary }]}>{item.number}</Text>
               </View>
-              <View style={[styles.callBtn, { backgroundColor: '#DC2626' }]}>
+              <View style={[styles.callBtn, { backgroundColor: ER.primary }]}>
                 <Ionicons name="call" size={16} color="#fff" />
                 <Text style={styles.callBtnText}>Call</Text>
               </View>
@@ -101,34 +114,34 @@ export default function EmergencyScreen() {
         </View>
 
         {/* Your Medical Info */}
-        <View style={[styles.card, { backgroundColor: '#fff', borderColor: '#E2E8F0' }]}>
-          <Text style={[styles.cardTitle, { color: '#0F172A' }]}>Your Medical Information</Text>
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>Your Medical Information</Text>
           <View style={styles.medInfoGrid}>
-            <View style={[styles.medInfoItem, { backgroundColor: '#F8FAFC' }]}>
-              <Ionicons name="water-outline" size={18} color="#DC2626" />
-              <Text style={styles.medInfoLabel}>Blood Type</Text>
-              <Text style={styles.medInfoValue}>
+            <View style={[styles.medInfoItem, { backgroundColor: colors.muted }]}>
+              <Ionicons name="water-outline" size={18} color={ER.primary} />
+              <Text style={[styles.medInfoLabel, { color: colors.mutedForeground }]}>Blood Type</Text>
+              <Text style={[styles.medInfoValue, { color: colors.foreground }]}>
                 {userProfile.bloodType || 'Not set'}
               </Text>
             </View>
-            <View style={[styles.medInfoItem, { backgroundColor: '#F8FAFC' }]}>
-              <Ionicons name="person-outline" size={18} color="#DC2626" />
-              <Text style={styles.medInfoLabel}>Name</Text>
-              <Text style={styles.medInfoValue}>{userProfile.name}</Text>
+            <View style={[styles.medInfoItem, { backgroundColor: colors.muted }]}>
+              <Ionicons name="person-outline" size={18} color={ER.primary} />
+              <Text style={[styles.medInfoLabel, { color: colors.mutedForeground }]}>Name</Text>
+              <Text style={[styles.medInfoValue, { color: colors.foreground }]}>{userProfile.name}</Text>
             </View>
           </View>
           {userProfile.allergies ? (
-            <View style={[styles.allergyBox, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}>
-              <Ionicons name="alert-circle-outline" size={16} color="#92400E" />
+            <View style={[styles.allergyBox, { backgroundColor: colors.warningBg, borderColor: colors.border }]}>
+              <Ionicons name="alert-circle-outline" size={16} color={colors.warningText} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.allergyLabel}>Known Allergies</Text>
-                <Text style={styles.allergyValue}>{userProfile.allergies}</Text>
+                <Text style={[styles.allergyLabel, { color: colors.warningText }]}>Known Allergies</Text>
+                <Text style={[styles.allergyValue, { color: colors.foreground }]}>{userProfile.allergies}</Text>
               </View>
             </View>
           ) : (
             <TouchableOpacity
               onPress={() => router.push('/(tabs)/profile')}
-              style={[styles.addMedInfo, { backgroundColor: '#F1F5F9', borderColor: '#E2E8F0' }]}
+              style={[styles.addMedInfo, { backgroundColor: colors.muted, borderColor: colors.border }]}
             >
               <Ionicons name="add-circle-outline" size={18} color={colors.primary} />
               <Text style={[styles.addMedInfoText, { color: colors.primary }]}>
@@ -140,15 +153,17 @@ export default function EmergencyScreen() {
 
         {/* Emergency Contact */}
         {userProfile.emergencyContact ? (
-          <View style={[styles.card, { backgroundColor: '#fff', borderColor: '#E2E8F0' }]}>
-            <Text style={[styles.cardTitle, { color: '#0F172A' }]}>Emergency Contact</Text>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.cardTitle, { color: colors.foreground }]}>Emergency Contact</Text>
             <View style={styles.contactRow}>
               <View style={[styles.contactIcon, { backgroundColor: colors.secondary }]}>
                 <Ionicons name="person-circle-outline" size={24} color={colors.primary} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.contactName}>{userProfile.emergencyContact}</Text>
-                <Text style={styles.contactPhone}>{userProfile.emergencyPhone || 'No phone saved'}</Text>
+                <Text style={[styles.contactName, { color: colors.foreground }]}>{userProfile.emergencyContact}</Text>
+                <Text style={[styles.contactPhone, { color: colors.mutedForeground }]}>
+                  {userProfile.emergencyPhone || 'No phone saved'}
+                </Text>
               </View>
               {userProfile.emergencyPhone ? (
                 <TouchableOpacity
@@ -165,7 +180,7 @@ export default function EmergencyScreen() {
             </View>
           </View>
         ) : (
-          <View style={[styles.card, { backgroundColor: '#fff', borderColor: '#E2E8F0' }]}>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <TouchableOpacity
               onPress={() => router.push('/(tabs)/profile')}
               style={styles.contactRow}
@@ -183,15 +198,17 @@ export default function EmergencyScreen() {
 
         {/* Nearest 24h Pharmacy */}
         {nearestEmergencyPharmacy && (
-          <View style={[styles.card, { backgroundColor: '#fff', borderColor: '#E2E8F0' }]}>
-            <Text style={[styles.cardTitle, { color: '#0F172A' }]}>Nearest 24h Emergency Pharmacy</Text>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.cardTitle, { color: colors.foreground }]}>Nearest 24h Emergency Pharmacy</Text>
             <View style={styles.pharmRow}>
               <View style={[styles.pharmIconBox, { backgroundColor: colors.secondary }]}>
                 <Ionicons name="business" size={22} color={colors.primary} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.pharmName}>{nearestEmergencyPharmacy.name}</Text>
-                <Text style={styles.pharmAddress}>{nearestEmergencyPharmacy.address}</Text>
+                <Text style={[styles.pharmName, { color: colors.foreground }]}>{nearestEmergencyPharmacy.name}</Text>
+                <Text style={[styles.pharmAddress, { color: colors.mutedForeground }]}>
+                  {nearestEmergencyPharmacy.address}
+                </Text>
                 <Text style={[styles.pharmDist, { color: colors.primary }]}>
                   {nearestEmergencyPharmacy.distance} km away
                 </Text>
@@ -208,9 +225,9 @@ export default function EmergencyScreen() {
         )}
 
         {/* Disclaimer */}
-        <View style={[styles.disclaimer, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}>
-          <Ionicons name="information-circle-outline" size={18} color="#92400E" />
-          <Text style={styles.disclaimerText}>
+        <View style={[styles.disclaimer, { backgroundColor: colors.warningBg, borderColor: colors.border }]}>
+          <Ionicons name="information-circle-outline" size={18} color={colors.warningText} />
+          <Text style={[styles.disclaimerText, { color: colors.warningText }]}>
             In a life-threatening emergency, call emergency services immediately. Do not delay seeking professional help.
           </Text>
         </View>
@@ -229,43 +246,43 @@ const styles = StyleSheet.create({
 
   sosBanner: { alignItems: 'center', paddingVertical: 20, gap: 10 },
   sosIcon: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center' },
-  sosTitle: { fontSize: 24, fontWeight: '800', color: '#DC2626' },
-  sosSubtitle: { fontSize: 14, color: '#64748B', textAlign: 'center', lineHeight: 20, paddingHorizontal: 20 },
+  sosTitle: { fontSize: 24, fontWeight: '800' },
+  sosSubtitle: { fontSize: 14, textAlign: 'center', lineHeight: 20, paddingHorizontal: 20 },
 
   card: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 12 },
   cardTitle: { fontSize: 16, fontWeight: '700' },
 
   emergencyRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   emergencyIcon: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  emergencyLabel: { fontSize: 14, fontWeight: '600', color: '#0F172A' },
-  emergencyNumber: { fontSize: 18, fontWeight: '800', color: '#DC2626' },
+  emergencyLabel: { fontSize: 14, fontWeight: '600' },
+  emergencyNumber: { fontSize: 20, fontWeight: '800' },
   callBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10 },
   callBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   medInfoGrid: { flexDirection: 'row', gap: 10 },
   medInfoItem: { flex: 1, borderRadius: 12, padding: 12, alignItems: 'center', gap: 6 },
-  medInfoLabel: { fontSize: 11, color: '#64748B', fontWeight: '600' },
-  medInfoValue: { fontSize: 16, fontWeight: '700', color: '#0F172A' },
+  medInfoLabel: { fontSize: 11, fontWeight: '600' },
+  medInfoValue: { fontSize: 16, fontWeight: '700' },
   allergyBox: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 12, borderRadius: 12, borderWidth: 1 },
-  allergyLabel: { fontSize: 11, color: '#92400E', fontWeight: '600' },
-  allergyValue: { fontSize: 14, color: '#0F172A', fontWeight: '500', marginTop: 2 },
+  allergyLabel: { fontSize: 11, fontWeight: '600' },
+  allergyValue: { fontSize: 14, fontWeight: '500', marginTop: 2 },
   addMedInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 12, borderWidth: 1 },
   addMedInfoText: { fontSize: 14, fontWeight: '600' },
 
   contactRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   contactIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  contactName: { fontSize: 15, fontWeight: '600', color: '#0F172A' },
-  contactPhone: { fontSize: 13, color: '#64748B' },
+  contactName: { fontSize: 15, fontWeight: '600' },
+  contactPhone: { fontSize: 13 },
   addEmergencyText: { flex: 1, fontSize: 14, fontWeight: '600' },
 
   pharmRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   pharmIconBox: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  pharmName: { fontSize: 15, fontWeight: '600', color: '#0F172A' },
-  pharmAddress: { fontSize: 12, color: '#64748B' },
+  pharmName: { fontSize: 15, fontWeight: '600' },
+  pharmAddress: { fontSize: 12 },
   pharmDist: { fontSize: 12, fontWeight: '600', marginTop: 2 },
   pharmCallBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 13, borderRadius: 12 },
   pharmCallText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 
   disclaimer: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14, borderRadius: 12, borderWidth: 1 },
-  disclaimerText: { flex: 1, fontSize: 13, color: '#92400E', lineHeight: 20 },
+  disclaimerText: { flex: 1, fontSize: 13, lineHeight: 20 },
 });

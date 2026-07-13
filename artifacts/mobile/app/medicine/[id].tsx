@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   priceLabel: { fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: '600' },
   priceValue: { fontSize: 22, fontWeight: '800', color: '#fff', marginTop: 2 },
 
-  infoSection: { paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  infoSection: { paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: 'transparent' },
   infoTitle: { fontSize: 16, fontWeight: '700', marginBottom: 10 },
   bodyText: { fontSize: 15, lineHeight: 23 },
   dosageBox: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 12, borderRadius: 12 },

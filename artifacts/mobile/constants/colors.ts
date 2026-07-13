@@ -41,6 +41,48 @@ const colors = {
     errorText: '#991B1B',
   },
 
+  dark: {
+    text: '#F8FAFC',
+    tint: '#34D399',
+
+    background: '#0A0F0D',
+    foreground: '#F1F5F9',
+
+    card: '#141F1A',
+    cardForeground: '#F1F5F9',
+
+    primary: '#34D399',
+    primaryForeground: '#052E16',
+
+    secondary: '#052E16',
+    secondaryForeground: '#6EE7B7',
+
+    muted: '#1A2820',
+    mutedForeground: '#94A3B8',
+
+    accent: '#FF6B35',
+    accentForeground: '#FFFFFF',
+
+    destructive: '#F87171',
+    destructiveForeground: '#FFFFFF',
+
+    border: '#1E3329',
+    input: '#1E3329',
+
+    // App-specific extras
+    headerBg: '#052E16',
+    chatUserBubble: '#059669',
+    chatAIBubble: '#141F1A',
+    chatBackground: '#0A0F0D',
+    starColor: '#FBBF24',
+    successBg: '#052E16',
+    successText: '#6EE7B7',
+    warningBg: '#1C1202',
+    warningText: '#FDE68A',
+    errorBg: '#1C0505',
+    errorText: '#FCA5A5',
+  },
+
   radius: 12,
 };
 
