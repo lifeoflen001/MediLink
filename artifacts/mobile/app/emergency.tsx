@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
-  Platform, Linking, Alert,
+  Platform, Linking, Alert, useColorScheme,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -28,7 +28,8 @@ const ER = {
 
 export default function EmergencyScreen() {
   const colors = useColors();
-  const isDark = colors.background === '#0A0F0D'; // quick check for dark palette
+  const scheme = useColorScheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
@@ -97,6 +98,8 @@ export default function EmergencyScreen() {
               key={item.number + item.label}
               style={styles.emergencyRow}
               onPress={() => handleCall(item.number, item.label)}
+              accessibilityLabel={`Call ${item.label} at ${item.number}`}
+              accessibilityRole="button"
             >
               <View style={[styles.emergencyIcon, { backgroundColor: erBg }]}>
                 <Ionicons name={item.icon} size={20} color={ER.primary} />

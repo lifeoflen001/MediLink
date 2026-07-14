@@ -11,11 +11,12 @@ import {
   Inter_700Bold,
   useFonts,
 } from '@expo-google-fonts/inter';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { setBaseUrl } from '@workspace/api-client-react';
 import { AppProvider } from '@/context/AppContext';
 import { ChatProvider } from '@/context/ChatContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 // Set absolute base URL so Expo can reach the API outside the shared proxy
 if (process.env.EXPO_PUBLIC_DOMAIN) {
@@ -26,23 +27,63 @@ SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
+// ── AuthGate: redirect based on auth state & role ─────────────────────────────
+
+function AuthGate() {
+  const { user, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup    = segments[0] === '(auth)';
+    const inAdminGroup   = segments[0] === '(admin)';
+    const inProviderGroup = segments[0] === '(provider)';
+    const inTabsGroup    = segments[0] === '(tabs)';
+
+    if (!user) {
+      // Not logged in — send to welcome unless already in auth group
+      if (!inAuthGroup) router.replace('/(auth)/welcome');
+      return;
+    }
+
+    // Logged in — route to appropriate area
+    if (user.role === 'superadmin') {
+      if (!inAdminGroup) router.replace('/(admin)');
+    } else if (user.role === 'customer') {
+      if (!inTabsGroup) router.replace('/(tabs)');
+    } else {
+      // hospital / pharmacy / supplier / doctor / institution
+      if (!inProviderGroup) router.replace('/(provider)');
+    }
+  }, [user, isLoading, segments]);
+
+  return null;
+}
+
+// ── Navigation stack ──────────────────────────────────────────────────────────
+
 function RootLayoutNav() {
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="medicine/[id]"
-        options={{ title: 'Medicine Details', headerBackTitle: 'Back' }}
-      />
-      <Stack.Screen
-        name="pharmacy/[id]"
-        options={{ title: 'Pharmacy', headerBackTitle: 'Back' }}
-      />
-      <Stack.Screen
-        name="emergency"
-        options={{ headerShown: false }}
-      />
-    </Stack>
+    <>
+      <AuthGate />
+      <Stack>
+        <Stack.Screen name="(auth)"     options={{ headerShown: false }} />
+        <Stack.Screen name="(admin)"    options={{ headerShown: false }} />
+        <Stack.Screen name="(provider)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)"     options={{ headerShown: false }} />
+        <Stack.Screen
+          name="medicine/[id]"
+          options={{ title: 'Medicine Details', headerBackTitle: 'Back' }}
+        />
+        <Stack.Screen
+          name="pharmacy/[id]"
+          options={{ title: 'Pharmacy', headerBackTitle: 'Back' }}
+        />
+        <Stack.Screen name="emergency"  options={{ headerShown: false }} />
+      </Stack>
+    </>
   );
 }
 
@@ -68,11 +109,13 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <GestureHandlerRootView>
             <KeyboardProvider>
-              <AppProvider>
-                <ChatProvider>
-                  <RootLayoutNav />
-                </ChatProvider>
-              </AppProvider>
+              <AuthProvider>
+                <AppProvider>
+                  <ChatProvider>
+                    <RootLayoutNav />
+                  </ChatProvider>
+                </AppProvider>
+              </AuthProvider>
             </KeyboardProvider>
           </GestureHandlerRootView>
         </QueryClientProvider>

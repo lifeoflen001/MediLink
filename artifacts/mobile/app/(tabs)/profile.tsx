@@ -9,6 +9,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColors } from '@/hooks/useColors';
@@ -17,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
 import { PHARMACIES } from '@/data/mockData';
+import { useAuth } from '@/context/AuthContext';
 
 function MenuItem({
   icon,

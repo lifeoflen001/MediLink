@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "MediConnect",
-    "slug": "mobile",
+    "name": "MediLink",
+    "slug": "medilink",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon_2.png",
-    "scheme": "mobile",
+    "scheme": "medilink",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -14,9 +14,12 @@
       "backgroundColor": "#0E9F6E"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.medilink.app"
     },
-    "android": {},
+    "android": {
+      "package": "com.medilink.app"
+    },
     "web": {
       "favicon": "./assets/images/icon_2.png"
     },

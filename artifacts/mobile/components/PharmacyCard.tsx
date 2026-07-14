@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import type { Pharmacy } from '@/data/mockData';
+
+const COMPACT_CARD_WIDTH = Math.max(140, Math.min(170, Dimensions.get('window').width * 0.4));
 
 interface Props {
   pharmacy: Pharmacy;
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
 
   // Compact
   compactCard: {
-    width: 150,
+    width: COMPACT_CARD_WIDTH,
     padding: 14,
     borderRadius: 14,
     borderWidth: 1,

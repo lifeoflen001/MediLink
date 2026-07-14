@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,17 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { MEDICINES, PHARMACIES, CATEGORIES } from '@/data/mockData';
+import { useApp } from '@/context/AppContext';
 import MedicineCard from '@/components/MedicineCard';
 import PharmacyCard from '@/components/PharmacyCard';
 import SectionHeader from '@/components/SectionHeader';
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 const QUICK_ACTIONS = [
   { id: '1', label: 'Search Medicine', icon: 'search' as const, route: '/(tabs)/search' as const },
@@ -30,6 +38,10 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 + 84 : 80;
+  const { userProfile } = useApp();
+
+  const greeting = useMemo(() => getGreeting(), []);
+  const firstName = userProfile.name.split(' ')[0];
 
   const handleSearchPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -52,13 +64,16 @@ export default function HomeScreen() {
       <View style={[styles.header, { paddingTop: topPad + 20, backgroundColor: colors.primary }]}>
         <View style={styles.headerTop}>
           <View style={styles.greetingBox}>
-            <Text style={styles.greeting}>Good day</Text>
+            <Text style={styles.greeting}>{greeting}, {firstName} 👋</Text>
             <Text style={styles.headerTitle}>Find your medicine</Text>
           </View>
           <View style={styles.headerActions}>
             <TouchableOpacity
               onPress={() => handleActionPress('/emergency', true)}
               style={[styles.sosButton, { backgroundColor: colors.accent }]}
+              accessibilityLabel="Emergency SOS"
+              accessibilityRole="button"
+              accessibilityHint="Opens emergency services and contacts"
             >
               <Ionicons name="alert-circle" size={16} color="#fff" />
               <Text style={styles.sosLabel}>SOS</Text>
